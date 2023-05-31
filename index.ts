@@ -78,20 +78,16 @@ app.post('/interact', async (req: Request, res: Response) => {
 
     console.log({ payload })
     const channelId = payload.channel.id;
-    const isDM = channelId.startsWith('D');
     const isChannel = channelId.startsWith('C');
 
     const response = {
-      response_type: '',
+      response_type: 'ephemeral',
       text: '',
-      channel: payload.channel.id,
+      channel: payload.user.id,
     };
 
-    if (isDM) {
-      response.channel = payload.user.id
-    }
-
     if (isChannel) {
+      response.channel = channelId
       response.response_type= 'in_channel'
     }
 
