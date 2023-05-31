@@ -44,13 +44,13 @@ app.post('/ask', async (req: Request, res: Response) => {
       },
     }));
     console.log(req.body, response)
-    await web.chat.postMessage({
-      channel: channel_id,
-      text: 'Search Results:',
-      blocks: response,
-    });
+    // await web.chat.postMessage({
+    //   channel: channel_id,
+    //   text: 'Search Results:',
+    //   blocks: response,
+    // });
 
-    res.send('Search results sent to Slack.');
+    res.send({ blocks: response });
   } catch (error) {
     res.status(500).json({ error: 'Internal server error:'+ error });
   }
