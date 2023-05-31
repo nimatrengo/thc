@@ -95,9 +95,9 @@ app.post('/interact', async (req: Request, res: Response) => {
     }
 
     await axios.post(responseUrl, response);
-
-    res.sendStatus(200);
     console.log('Message sent successfully:', response, responseUrl);
+
+    return res.status(200).end();
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });
