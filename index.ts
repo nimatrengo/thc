@@ -108,7 +108,7 @@ app.post('/interact', async (req: Request, res: Response) => {
 
     await web.chat.postMessage(response);
 
-    res.send("Message sent successfully in Slack");
+    res.send(response);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });
