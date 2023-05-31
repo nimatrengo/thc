@@ -77,10 +77,7 @@ app.post('/interact', async (req: Request, res: Response) => {
     const selectedOption = options.find((option) => option.value === selectedValue);
 
     console.log({ payload })
-    const channelId = payload.channel.id;
-    const userId = payload.user.id;
     const responseUrl = payload.response_url;
-    const channelType = payload.channel.channel_type;
 
     const response = {
       text: '',
@@ -96,8 +93,8 @@ app.post('/interact', async (req: Request, res: Response) => {
       response.text = responseMessage;
     }
 
-    // await axios.post(responseUrl, response);
-    console.log('Message sent successfully:', response, responseUrl);
+    const result = await axios.post(responseUrl, response);
+    console.log('Message sent successfully:', response, responseUrl, result);
 
     return res.json(response);
   } catch (error) {
