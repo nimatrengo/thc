@@ -101,10 +101,12 @@ app.post('/interact', async (req: Request, res: Response) => {
       result = await web.chat.postMessage({
         channel: channelId,
         text: response.text,
+        as_user: false,
       });
     } else {
       result = await web.chat.postMessage({
         channel: userId,
+        as_user: false,
         text: response.text,
       });
     }
