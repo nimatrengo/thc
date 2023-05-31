@@ -76,6 +76,7 @@ app.post('/interact', async (req: Request, res: Response) => {
 
     const selectedOption = options.find((option) => option.value === selectedValue);
 
+    console.log({payload})
     const response = {
       text: '',
       channel: payload.channel.id,
