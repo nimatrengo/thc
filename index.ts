@@ -104,8 +104,8 @@ app.post('/interact', async (req: Request, res: Response) => {
       await web.chat.postMessage(response);
       console.log(response, payload)
     } else {
-      await web.chat.postEphemeral({
-        channel: response.channel,
+      await web.chat.postMessage({
+        channel: userId,
         user: userId,
         text: response.text
       });
