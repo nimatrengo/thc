@@ -25,6 +25,8 @@ interface DataResponse {
     value: string;
 }
 
+const options: { text: string; value: string }[] = [];
+
 app.post('/ask', async (req: Request, res: Response) => {
   try {
     const query = encodeURIComponent(req.body.text).replace(' ', '%20');
@@ -40,11 +42,11 @@ app.post('/ask', async (req: Request, res: Response) => {
     //     text: `<${result.url}|${result.title}>`,
     //   },
     // }));
-    
-    const options: DataResponse[] = data.searchResults.map((result) => ({
-      text: result.title,
-      value: result.url,
-    }));
+    options.length = 0;
+    data.searchResults.forEach((result) => {
+      const option = { text: result.title, value: result.url };
+      options.push(option);
+    });
 
     const message = {
       channel: req.body.channel_id,
@@ -76,14 +78,28 @@ app.post('/ask', async (req: Request, res: Response) => {
 app.post('/interact', async (req: Request, res: Response) => {
   try {
     const payload = JSON.parse(req.body.payload);
-    const selectedOption = payload.actions[0].selected_options[0];
-    console.log(selectedOption, req.body.payload)
-    const responseMessage = `This Help center article might help you: <${selectedOption.value}|${selectedOption.text}>`;
+    const selectedValue = payload.actions[0].selected_options[0].value;
 
-    res.send({
-      channel: payload.channel.id,
-      text: responseMessage,
-    });
+    const selectedOption = options.find((option) => option.value === selectedValue);
+
+    console.log(selectedOption, req.body.payload);
+    const response = {
+      channel: '',
+      text: '',
+    };
+
+    if (selectedOption) {
+      const responseMessage = `This Help center article might help you: <${selectedOption.value}|${selectedOption.text}>`;
+      response.channel = payload.channel.id
+      response.text = responseMessage
+    } 
+    else { 
+      const responseMessage = `Something went wrong in the THC bot`;
+      response.channel = payload.channel.id
+      response.text = responseMessage
+    }
+
+    res.send(response);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });
