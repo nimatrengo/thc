@@ -77,7 +77,7 @@ app.post('/interact', async (req: Request, res: Response) => {
   try {
     const payload = JSON.parse(req.body.payload);
     const selectedOption = payload.actions[0].selected_options[0];
-
+    console.log(selectedOption)
     const responseMessage = `This Help center article might help you: <${selectedOption.value}|${selectedOption.text}>`;
 
     res.send({
