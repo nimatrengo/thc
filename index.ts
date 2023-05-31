@@ -80,10 +80,11 @@ app.post('/interact', async (req: Request, res: Response) => {
     const channelId = payload.channel.id;
     const userId = payload.user.id;
     const isChannel = channelId.startsWith('C');
+    const channelType = payload.channel.channel_type;
 
     const response = {
       text: '',
-      channel: payload.channel.id,
+      channel: channelId,
     };
 
     if (selectedOption) {
@@ -95,23 +96,19 @@ app.post('/interact', async (req: Request, res: Response) => {
       response.text = responseMessage
     }
     let result:unknown= '';
-    if (isChannel) {
-      response.channel = channelId;
-      result = await web.chat.postMessage(response);
-      console.log(response, payload)
+    
+    if (channelType === 'im' || channelType === 'channel') {
+      result = await web.chat.postMessage({
+        channel: channelId,
+        text: response.text,
+      });
     } else {
       result = await web.chat.postMessage({
         channel: userId,
-        user: userId,
-        text: response.text
+        text: response.text,
       });
-
-      console.log({
-        channel: userId,
-        user: userId,
-        text: response.text
-      }, payload)
     }
+
 
 
     console.log('Message sent successfully:', result);
