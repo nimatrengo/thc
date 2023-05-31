@@ -1,11 +1,9 @@
 import express, { Request, Response } from 'express';
 import axios from 'axios';
-import { WebClient } from '@slack/web-api';
 import bodyParser from 'body-parser';
 
 const app = express();
 const port = process.env.PORT || 8080;
-const web = new WebClient(process.env.SLACK_TOKEN);
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -25,7 +23,7 @@ interface DataResponse {
     value: string;
 }
 
-const options: { text: string; value: string }[] = [];
+const options: DataResponse[] = [];
 
 app.post('/ask', async (req: Request, res: Response) => {
   try {
@@ -33,15 +31,7 @@ app.post('/ask', async (req: Request, res: Response) => {
     const searchUrl = `https://help.trengo.com/en/search?term=${query}`;
 
     const { data }: { data: Data } = await axios.get(searchUrl);
-    
-    const { channel_id } = req.body;
-    // const response: DataResponse[] = data.searchResults.map((result) => ({
-    //   type: 'section',
-    //   text: {
-    //     type: 'mrkdwn',
-    //     text: `<${result.url}|${result.title}>`,
-    //   },
-    // }));
+      
     options.length = 0;
     data.searchResults.forEach((result) => {
       const option = { text: result.title, value: result.url };
@@ -69,6 +59,8 @@ app.post('/ask', async (req: Request, res: Response) => {
       ],
     };
 
+    console.log({ message, options }, req.body)
+
     res.send(message);
   } catch (error) {
     res.status(500).json({ error: 'Internal server error:'+ error });
@@ -82,7 +74,6 @@ app.post('/interact', async (req: Request, res: Response) => {
 
     const selectedOption = options.find((option) => option.value === selectedValue);
 
-    console.log(selectedOption, req.body.payload);
     const response = {
       channel: '',
       text: '',
@@ -98,6 +89,8 @@ app.post('/interact', async (req: Request, res: Response) => {
       response.channel = payload.channel.id
       response.text = responseMessage
     }
+
+    console.log({ response, selectedOption }, req.body.payload);
 
     res.send(response);
   } catch (error) {
