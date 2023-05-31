@@ -43,7 +43,7 @@ app.post('/ask', async (req: Request, res: Response) => {
         text: `<${result.url}|${result.title}>`,
       },
     }));
-    console.log(channel_id, response)
+    console.log(req.body, response)
     await web.chat.postMessage({
       channel: channel_id,
       text: 'Search Results:',
