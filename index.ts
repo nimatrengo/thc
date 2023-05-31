@@ -79,40 +79,25 @@ app.post('/interact', async (req: Request, res: Response) => {
     console.log({ payload })
     const channelId = payload.channel.id;
     const userId = payload.user.id;
-    const isChannel = channelId.startsWith('C');
+    const responseUrl = payload.response_url;
     const channelType = payload.channel.channel_type;
 
     const response = {
       text: '',
-      channel: channelId,
     };
 
     if (selectedOption) {
       const responseMessage = `This Help center article might help you: <${selectedOption.value}|${selectedOption.text}>`;
-      response.text = responseMessage
-    } 
-    else { 
-      const responseMessage = `Something went wrong in the THC bot`;
-      response.text = responseMessage
-    }
-    let result:unknown= '';
-    
-    if (channelType === 'im' || channelType === 'channel') {
-      result = await web.chat.postMessage({
-        channel: channelId,
-        text: response.text,
-        as_user: false,
-      });
+      response.text = responseMessage;
     } else {
-      result = await web.chat.postMessage({
-        channel: userId,
-        as_user: false,
-        text: response.text,
-      });
+      const responseMessage = `Something went wrong in the THC bot`;
+      response.text = responseMessage;
     }
 
-    res.json(result)
-    console.log('Message sent successfully:', result);
+    await axios.post(responseUrl, response);
+
+    res.sendStatus(200);
+    console.log('Message sent successfully:', response, responseUrl);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });
