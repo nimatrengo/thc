@@ -108,7 +108,7 @@ app.post('/interact', async (req: Request, res: Response) => {
 
     console.log('Message sent successfully:', response, responseUrl, result);
 
-    return res.json(response);
+    return res.status(200).end();
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });
