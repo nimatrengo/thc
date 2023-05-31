@@ -109,8 +109,7 @@ app.post('/interact', async (req: Request, res: Response) => {
       });
     }
 
-
-
+    res.json(result)
     console.log('Message sent successfully:', result);
   } catch (error) {
     console.error(error);
