@@ -1,14 +1,14 @@
 import express, { Request, Response } from 'express';
 import axios from 'axios';
 import { WebClient } from '@slack/web-api';
+import bodyParser from 'body-parser';
 
 const app = express();
 const port = process.env.PORT || 8080;
-const slackToken = "xoxb-338182487747-5330053957367-uMhNwVoOkqj29EuWfFsTS5uT";
-const web = new WebClient(slackToken);
+const web = new WebClient(process.env.SLACK_TOKEN);
 
-app.use(express.json());
-
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 interface Item {
   id : number;
   title : string;
