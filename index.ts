@@ -86,10 +86,6 @@ app.post('/interact', async (req: Request, res: Response) => {
       channel: payload.channel.id,
     };
 
-    if (isChannel) {
-      response.channel = channelId
-    }
-
     if (selectedOption) {
       const responseMessage = `This Help center article might help you: <${selectedOption.value}|${selectedOption.text}>`;
       response.text = responseMessage
@@ -98,27 +94,27 @@ app.post('/interact', async (req: Request, res: Response) => {
       const responseMessage = `Something went wrong in the THC bot`;
       response.text = responseMessage
     }
-
+    let result:unknown= '';
     if (isChannel) {
       response.channel = channelId;
-      await web.chat.postMessage(response);
+      result = await web.chat.postMessage(response);
       console.log(response, payload)
     } else {
-      await web.chat.postMessage({
+      result = await web.chat.postMessage({
         channel: userId,
         user: userId,
         text: response.text
       });
 
       console.log({
-        channel: response.channel,
+        channel: userId,
         user: userId,
         text: response.text
       }, payload)
     }
 
 
-    res.send(response);
+    console.log('Message sent successfully:', result);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });
