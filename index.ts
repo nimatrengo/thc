@@ -83,7 +83,7 @@ app.post('/interact', async (req: Request, res: Response) => {
 
     const response = {
       text: '',
-      channel: payload.user.id,
+      channel: payload.channel.id,
     };
 
     if (isChannel) {
