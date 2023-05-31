@@ -76,11 +76,26 @@ app.post('/interact', async (req: Request, res: Response) => {
 
     const selectedOption = options.find((option) => option.value === selectedValue);
 
-    console.log({payload})
+    console.log({ payload })
+    const channelId = req.body.channel_id;
+    const isDM = channelId.startsWith('D');
+    const isChannel = channelId.startsWith('C');
+
     const response = {
+      response_type: '',
       text: '',
       channel: payload.channel.id,
     };
+
+    if (isDM) {
+      response.channel = payload.user.id
+    }
+
+    if (isChannel) {
+      response.response_type= 'in_channel'
+    }
+
+    console.log(response, payload)
 
     if (selectedOption) {
       const responseMessage = `This Help center article might help you: <${selectedOption.value}|${selectedOption.text}>`;
