@@ -21,11 +21,8 @@ interface Data {
 }
 
 interface DataResponse {
-  type: string;
-  text: {
-    type: string;
     text: string;
-  };
+    value: string;
 }
 
 app.post('/ask', async (req: Request, res: Response) => {
@@ -36,21 +33,41 @@ app.post('/ask', async (req: Request, res: Response) => {
     const { data }: { data: Data } = await axios.get(searchUrl);
     
     const { channel_id } = req.body;
-    const response: DataResponse[] = data.searchResults.map((result) => ({
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: `<${result.url}|${result.title}>`,
-      },
+    // const response: DataResponse[] = data.searchResults.map((result) => ({
+    //   type: 'section',
+    //   text: {
+    //     type: 'mrkdwn',
+    //     text: `<${result.url}|${result.title}>`,
+    //   },
+    // }));
+    
+    const options: DataResponse[] = data.searchResults.map((result) => ({
+      text: result.title,
+      value: result.url,
     }));
-    console.log(req.body, response)
-    await web.chat.postMessage({
-      channel: channel_id,
-      text: 'Search Results:',
-      blocks: response,
-    });
 
-    res.send("Response sent to Slack!");
+    const message = {
+      channel: req.body.channel_id,
+      text: 'Please select an item:',
+      attachments: [
+        {
+          text: 'Choose an item from the dropdown menu:',
+          fallback: 'You are unable to choose an item',
+          callback_id: 'item_selection',
+          color: '#3AA3E3',
+          attachment_type: 'default',
+          actions: [
+            {
+              name: 'item_selection',
+              type: 'select',
+              options: options,
+            },
+          ],
+        },
+      ],
+    };
+
+    res.send(message);
   } catch (error) {
     res.status(500).json({ error: 'Internal server error:'+ error });
   }
