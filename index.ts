@@ -78,20 +78,17 @@ app.post('/interact', async (req: Request, res: Response) => {
 
     console.log({ payload })
     const channelId = payload.channel.id;
+    const userId = payload.user.id;
     const isChannel = channelId.startsWith('C');
 
     const response = {
-      response_type: 'ephemeral',
       text: '',
       channel: payload.user.id,
     };
 
     if (isChannel) {
       response.channel = channelId
-      response.response_type= 'in_channel'
     }
-
-    console.log(response, payload)
 
     if (selectedOption) {
       const responseMessage = `This Help center article might help you: <${selectedOption.value}|${selectedOption.text}>`;
@@ -102,7 +99,24 @@ app.post('/interact', async (req: Request, res: Response) => {
       response.text = responseMessage
     }
 
-    await web.chat.postMessage(response);
+    if (isChannel) {
+      response.channel = channelId;
+      await web.chat.postMessage(response);
+      console.log(response, payload)
+    } else {
+      await web.chat.postEphemeral({
+        channel: response.channel,
+        user: userId,
+        text: response.text
+      });
+
+      console.log({
+        channel: response.channel,
+        user: userId,
+        text: response.text
+      }, payload)
+    }
+
 
     res.send(response);
   } catch (error) {
