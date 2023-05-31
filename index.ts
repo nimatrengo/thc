@@ -75,18 +75,16 @@ app.post('/interact', async (req: Request, res: Response) => {
     const selectedOption = options.find((option) => option.value === selectedValue);
 
     const response = {
-      channel: '',
+      response_type: 'in_channel',
       text: '',
     };
 
     if (selectedOption) {
       const responseMessage = `This Help center article might help you: <${selectedOption.value}|${selectedOption.text}>`;
-      response.channel = payload.channel.id
       response.text = responseMessage
     } 
     else { 
       const responseMessage = `Something went wrong in the THC bot`;
-      response.channel = payload.channel.id
       response.text = responseMessage
     }
 
