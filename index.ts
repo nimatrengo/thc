@@ -84,11 +84,13 @@ app.post('/interact', async (req: Request, res: Response) => {
 
     const response = {
       text: '',
+      response_type: "in_channel",
     };
 
     if (selectedOption) {
       const responseMessage = `This Help center article might help you: <${selectedOption.value}|${selectedOption.text}>`;
       response.text = responseMessage;
+      
     } else {
       const responseMessage = `Something went wrong in the THC bot`;
       response.text = responseMessage;
