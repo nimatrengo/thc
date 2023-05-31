@@ -7,6 +7,8 @@ const port = process.env.PORT || 8080;
 const slackToken = "xoxb-338182487747-5330053957367-uMhNwVoOkqj29EuWfFsTS5uT";
 const web = new WebClient(slackToken);
 
+app.use(express.json());
+
 interface Item {
   id : number;
   title : string;
@@ -26,9 +28,9 @@ interface DataResponse {
   };
 }
 
-app.get('/ask/:query', async (req: Request, res: Response) => {
+app.post('/ask', async (req: Request, res: Response) => {
   try {
-    const query = encodeURIComponent(req.params.query).replace(' ', '%20');
+    const query = encodeURIComponent(req.body.text).replace(' ', '%20');
     const searchUrl = `https://help.trengo.com/en/search?term=${query}`;
 
     const { data }: { data: Data } = await axios.get(searchUrl);
