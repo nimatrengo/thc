@@ -1,9 +1,11 @@
 import express, { Request, Response } from 'express';
 import axios from 'axios';
 import bodyParser from 'body-parser';
+import { WebClient } from '@slack/web-api';
 
 const app = express();
 const port = process.env.PORT || 8080;
+const web = new WebClient(process.env.SLACK_TOKEN);
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -75,8 +77,8 @@ app.post('/interact', async (req: Request, res: Response) => {
     const selectedOption = options.find((option) => option.value === selectedValue);
 
     const response = {
-      response_type: 'in_channel',
       text: '',
+      channel: payload.channel.id,
     };
 
     if (selectedOption) {
@@ -88,9 +90,9 @@ app.post('/interact', async (req: Request, res: Response) => {
       response.text = responseMessage
     }
 
-    console.log({ response, selectedOption }, req.body.payload);
+    await web.chat.postMessage(response);
 
-    res.send(response);
+    res.send("Message sent successfully in Slack");
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });
