@@ -93,7 +93,19 @@ app.post('/interact', async (req: Request, res: Response) => {
       response.text = responseMessage;
     }
 
-    const result = await axios.post(responseUrl, response);
+    const result = await axios.post(responseUrl, {
+      response_type: 'in_channel',
+      blocks: [
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: response.text,
+          },
+        },
+      ],
+    });
+
     console.log('Message sent successfully:', response, responseUrl, result);
 
     return res.json(response);
