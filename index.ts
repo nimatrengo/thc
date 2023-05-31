@@ -73,6 +73,24 @@ app.post('/ask', async (req: Request, res: Response) => {
   }
 });
 
+app.post('/interact', async (req: Request, res: Response) => {
+  try {
+    const payload = JSON.parse(req.body.payload);
+    const selectedOption = payload.actions[0].selected_options[0];
+
+    const responseMessage = `You selected: <${selectedOption.value}|${selectedOption.text}>`;
+    await web.chat.postMessage({
+      channel: payload.channel.id,
+      text: responseMessage,
+    });
+
+    res.send('Interactive message response sent to Slack.');
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
